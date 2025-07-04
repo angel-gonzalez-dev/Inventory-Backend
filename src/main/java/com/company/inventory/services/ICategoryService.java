@@ -8,8 +8,15 @@ import com.company.inventory.response.CategoryResponseRest;
 public interface ICategoryService {
 
 	/**
-	 * Method get categories
+	 * Metodo para obtener todas las categorias
 	 * @return
 	 */
 	public ResponseEntity<CategoryResponseRest> search();
+	
+	/**
+	 * Metodo para obtener categoria por id
+	 * @param id Identificador unico de cada categoria
+	 * @return
+	 */
+	public ResponseEntity<CategoryResponseRest> searchById(Long id);
 }

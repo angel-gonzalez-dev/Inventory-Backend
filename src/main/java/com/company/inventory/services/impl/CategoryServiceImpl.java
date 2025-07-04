@@ -1,6 +1,8 @@
 package com.company.inventory.services.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,6 +44,40 @@ public class CategoryServiceImpl implements ICategoryService {
 		
 		return new ResponseEntity<CategoryResponseRest>(categoryResponseRest,HttpStatus.OK);
 		//return ResponseEntity.ok(categoryResponseRest);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public ResponseEntity<CategoryResponseRest> searchById(Long id) {
+		
+		CategoryResponseRest categoryResponseRest = new CategoryResponseRest();
+		
+		try {
+			if(id == null) {
+				categoryResponseRest.setMetadata("Respuesta nok", "0001", "Ingresar id");
+				return new ResponseEntity<CategoryResponseRest>(categoryResponseRest, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			List<Category> listCategories = new ArrayList<>();
+			Optional<Category> category = categoryDao.findById(id);
+			
+			if(category.isPresent()) {
+				listCategories.add(category.get());
+				categoryResponseRest.getCategoryResponse().setListCategories(listCategories);
+				categoryResponseRest.setMetadata("Respuesta ok", "0000", "Respuesta exitosa");
+			}else {
+				categoryResponseRest.setMetadata("Respuesta nok", "0001", "Categoria no encontrada");
+				return new ResponseEntity<CategoryResponseRest>(categoryResponseRest,HttpStatus.NOT_FOUND);
+			}
+			
+			
+			
+		}catch(Exception e) {
+			categoryResponseRest.setMetadata("Response nok", "0001", "Error al consultar");
+			log.error("Error general al consultar categoria por Id");
+			return new ResponseEntity<CategoryResponseRest>(categoryResponseRest, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<CategoryResponseRest>(categoryResponseRest, HttpStatus.OK);
 	}
 
 }
