@@ -1,7 +1,6 @@
 package com.company.inventory.services;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 
 import com.company.inventory.model.Category;
 import com.company.inventory.response.CategoryResponseRest;
@@ -27,4 +26,12 @@ public interface ICategoryService {
 	 * @return
 	 */
 	public ResponseEntity<CategoryResponseRest> saveCategory(Category category);
+	
+	/**
+	 * Method update category
+	 * @param category
+	 * @return
+	 */
+	public ResponseEntity<CategoryResponseRest> updateCategory(Category category, Long id);
+	
 }

@@ -107,4 +107,46 @@ public class CategoryServiceImpl implements ICategoryService {
 		return new ResponseEntity<CategoryResponseRest>(response,HttpStatus.OK);
 	}
 
+	@Override
+	@Transactional
+	public ResponseEntity<CategoryResponseRest> updateCategory(Category category, Long id) {
+		CategoryResponseRest categoryResponseRest = new CategoryResponseRest();
+		try {
+			List<Category> listCategories = new ArrayList<>();
+			Optional<Category> categorySearch = categoryDao.findById(id);
+			if(categorySearch.isPresent()) {
+				//Se procesara a actualizar el registro
+				categorySearch.get().setName(category.getName());
+				categorySearch.get().setDescription(category.getDescription());
+				Category categoryUpdate = categoryDao.save(categorySearch.get());
+				if(categoryUpdate != null) {
+					log.info("Categoria actualizada correctamente");
+					listCategories.add(categoryUpdate);
+					categoryResponseRest.getCategoryResponse().setListCategories(listCategories);
+					categoryResponseRest.setMetadata("Respuesta ok", "0000", "Categoria actualizada correctamente");
+				}else {
+					log.info("Categoria no actualizada");
+					categoryResponseRest.setMetadata("Respuesta nok", "0001", "Categoria no actualizada");
+					return new ResponseEntity<CategoryResponseRest>(categoryResponseRest, HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+				
+			}else {
+				log.info("Categoria no encontrada");
+				categoryResponseRest.setMetadata("Respuesta nok", "0001", "No se encontro la categoria para actualizar");
+				return new ResponseEntity<CategoryResponseRest>(categoryResponseRest,HttpStatus.NOT_FOUND);
+			}
+			
+			
+		}catch(Exception e) {
+			log.error("Error general al actualizar categoria");
+			e.printStackTrace();
+			categoryResponseRest.setMetadata("Respuesta nok", "0001", "Error al actualizar categoria");
+			return new ResponseEntity<CategoryResponseRest>(categoryResponseRest,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		
+		
+		return new ResponseEntity<CategoryResponseRest>(categoryResponseRest, HttpStatus.OK);
+	}
+
 }
