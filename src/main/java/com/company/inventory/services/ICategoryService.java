@@ -34,4 +34,12 @@ public interface ICategoryService {
 	 */
 	public ResponseEntity<CategoryResponseRest> updateCategory(Category category, Long id);
 	
+	
+	/**
+	 * Method delete category
+	 * @param id
+	 * @return
+	 */
+	public ResponseEntity<CategoryResponseRest>  deleteCategory(Long id);
+	
 }

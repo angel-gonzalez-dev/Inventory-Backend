@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.company.inventory.dao.ICategoryDao;
 import com.company.inventory.model.Category;
 import com.company.inventory.response.CategoryResponseRest;
@@ -23,6 +22,7 @@ public class CategoryServiceImpl implements ICategoryService {
 
 	@Autowired
 	private ICategoryDao categoryDao;
+
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -145,6 +145,36 @@ public class CategoryServiceImpl implements ICategoryService {
 		}
 		
 		
+		
+		return new ResponseEntity<CategoryResponseRest>(categoryResponseRest, HttpStatus.OK);
+	}
+
+	@Override
+	@Transactional
+	public ResponseEntity<CategoryResponseRest> deleteCategory(Long id) {
+		
+		CategoryResponseRest categoryResponseRest = new CategoryResponseRest();
+		
+		try {
+			Optional<Category> categorySearch = categoryDao.findById(id);
+			if(categorySearch.isPresent()) {
+				
+				categoryDao.deleteById(id);
+				categoryResponseRest.setMetadata("Respuesta ok", "0000", "Categoria eliminada");
+			}else {
+				log.info("Categoria no encontrada");
+				categoryResponseRest.setMetadata("Respuesta nok", "0002", "Categoria no encontrada");
+				return new ResponseEntity<CategoryResponseRest>(categoryResponseRest, HttpStatus.OK);
+			}
+			
+			
+		}catch (Exception e) {
+			log.error("Error general al borrar Categoria");
+			categoryResponseRest.setMetadata("Respuesta nok", "0001", "Error general en eliminar Categoria");
+			e.printStackTrace();
+			return new ResponseEntity<CategoryResponseRest>(categoryResponseRest, HttpStatus.INTERNAL_SERVER_ERROR);
+			
+		}
 		
 		return new ResponseEntity<CategoryResponseRest>(categoryResponseRest, HttpStatus.OK);
 	}
